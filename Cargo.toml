@@ -1,0 +1,27 @@
+[package]
+name = "whalespotter"
+version = "0.1.0"
+authors = ["dystroy <denys.seguret@gmail.com>"]
+repository = "https://github.com/Canop/broot"
+description = "Find Big and Fat Files and Folders"
+edition = "2018"
+keywords = ["cli"]
+license = "MIT"
+categories = ["command-line-utilities"]
+readme = "README.md"
+
+[dependencies]
+lazy_static = "1.3"
+crossbeam = "0.7"
+crossterm_cursor = "=0.2.4"
+crossterm_input = "=0.3.6"
+crossterm_screen = "=0.2.3"
+crossterm_style = "=0.3.3"
+crossterm_terminal = "=0.2.4"
+crossterm_utils = "=0.2.3"
+#termimad = "0.6.1"
+termimad = { path = "../termimad" }
+
+[profile.release]
+lto = true # link time optimization - roughly halves the size of the exec
+codegen-units = 1 # this removes a few hundred bytes from the final exec size
