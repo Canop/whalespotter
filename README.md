@@ -7,7 +7,7 @@
 
 ![screen](img/screen.png)
 
-## Installation
+## Installation
 
 The simplest solution is to execute
 
@@ -18,7 +18,6 @@ If you want to play with the code, you'll probably fetch the repository. From th
 	cargo build --release
 
 and the executable will be in `target/release`.
-
 
 Note that the current version of whalespotter doesn't run on windows (due to some additional code to deduplicate inodes).
 

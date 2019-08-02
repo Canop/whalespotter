@@ -35,8 +35,8 @@ impl<'t> Screen<'t> {
                 )),
             ).with_align(Alignment::Left),
             ListViewColumn::new(
-                "file count",
-                10, 10,
+                "items",
+                7, 9,
                 Box::new(|fi: &FileInfo| ListViewCell::new(
                     u64_to_str(fi.file_count),
                     &SKIN.paragraph.compound_style,
@@ -44,7 +44,7 @@ impl<'t> Screen<'t> {
             ).with_align(Alignment::Right),
             ListViewColumn::new(
                 "size",
-                6, 8,
+                5, 6,
                 Box::new(|fi: &FileInfo| ListViewCell::new(
                     u64_to_str(fi.size),
                     &SKIN.paragraph.compound_style,
@@ -52,17 +52,13 @@ impl<'t> Screen<'t> {
             ).with_align(Alignment::Right),
             ListViewColumn::new(
                 "size",
-                15, 17,
+                13, 13,
                 Box::new(move |fi: &FileInfo| {
                     let total_size = column_total_size.load(Ordering::Relaxed);
                     ListViewCell::new(
                         if total_size > 0 {
-                            let part = (fi.size as f64) / (total_size as f64);
-                            let mut s = format!("{:>3.0}% ", 100.0 * part);
-                            for i in 0..10 {
-                                s.push(if (i as f64) < (10.0 * part) - 0.5 { '█' } else { ' ' });
-                            }
-                            s
+                            let part = (fi.size as f32) / (total_size as f32);
+                            format!("{:>3.0}% {}", 100.0 * part, ProgressBar::new(part, 8))
                         } else {
                             "".to_owned()
                         },
@@ -138,7 +134,7 @@ const SIZE_NAMES: &[&str] = &["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 /// format a number of as a string
 pub fn u64_to_str(mut v: u64) -> String {
     let mut i = 0;
-    while v >= 1200 && i < SIZE_NAMES.len() - 1 {
+    while v >= 1000 && i < SIZE_NAMES.len() - 1 {
         v >>= 10;
         i += 1;
     }
