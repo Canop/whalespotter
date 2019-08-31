@@ -134,7 +134,7 @@ const SIZE_NAMES: &[&str] = &["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 /// format a number of as a string
 pub fn u64_to_str(mut v: u64) -> String {
     let mut i = 0;
-    while v >= 1000 && i < SIZE_NAMES.len() - 1 {
+    while v >= 2300 && i < SIZE_NAMES.len() - 1 {
         v >>= 10;
         i += 1;
     }

@@ -98,6 +98,12 @@ fn main() {
                                 }
                             }
                         }
+                        Event::Key(KeyEvent::Home) => {
+                            screen.list_view.select_first_line();
+                        }
+                        Event::Key(KeyEvent::End) => {
+                            screen.list_view.select_last_line();
+                        }
                         Event::Key(KeyEvent::PageUp) => {
                             screen.list_view.try_scroll_pages(-1);
                         }
