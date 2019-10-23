@@ -1,14 +1,15 @@
+use crossterm::{Attribute, Color::*};
+use crossterm::{ClearType, Terminal};
 use std::{
     path::{Path, PathBuf},
-    sync::{atomic::{AtomicU64, Ordering}, Arc},
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    },
 };
-use crossterm_style::{Attribute, Color::*};
-use crossterm_terminal::{ClearType, Terminal};
 use termimad::*;
 
-use crate::{
-    file_info::FileInfo,
-};
+use crate::file_info::FileInfo;
 
 pub struct Screen<'t> {
     root: PathBuf,
@@ -28,31 +29,42 @@ impl<'t> Screen<'t> {
         let columns = vec![
             ListViewColumn::new(
                 "name",
-                10, 50,
-                Box::new(|fi: &FileInfo| ListViewCell::new(
-                    fi.path.file_name().unwrap().to_string_lossy().to_string(),
-                    if fi.is_dir { &SKIN.bold } else { &SKIN.paragraph.compound_style },
-                )),
-            ).with_align(Alignment::Left),
+                10,
+                50,
+                Box::new(|fi: &FileInfo| {
+                    ListViewCell::new(
+                        fi.path.file_name().unwrap().to_string_lossy().to_string(),
+                        if fi.is_dir {
+                            &SKIN.bold
+                        } else {
+                            &SKIN.paragraph.compound_style
+                        },
+                    )
+                }),
+            )
+            .with_align(Alignment::Left),
             ListViewColumn::new(
                 "items",
-                7, 9,
-                Box::new(|fi: &FileInfo| ListViewCell::new(
-                    u64_to_str(fi.file_count),
-                    &SKIN.paragraph.compound_style,
-                )),
-            ).with_align(Alignment::Right),
+                7,
+                9,
+                Box::new(|fi: &FileInfo| {
+                    ListViewCell::new(u64_to_str(fi.file_count), &SKIN.paragraph.compound_style)
+                }),
+            )
+            .with_align(Alignment::Right),
             ListViewColumn::new(
                 "size",
-                5, 6,
-                Box::new(|fi: &FileInfo| ListViewCell::new(
-                    u64_to_str(fi.size),
-                    &SKIN.paragraph.compound_style,
-                )),
-            ).with_align(Alignment::Right),
+                5,
+                6,
+                Box::new(|fi: &FileInfo| {
+                    ListViewCell::new(u64_to_str(fi.size), &SKIN.paragraph.compound_style)
+                }),
+            )
+            .with_align(Alignment::Right),
             ListViewColumn::new(
                 "size",
-                13, 13,
+                13,
+                13,
                 Box::new(move |fi: &FileInfo| {
                     let total_size = column_total_size.load(Ordering::Relaxed);
                     ListViewCell::new(
@@ -62,10 +74,15 @@ impl<'t> Screen<'t> {
                         } else {
                             "".to_owned()
                         },
-                        if fi.is_dir { &SKIN.bold } else { &SKIN.paragraph.compound_style },
+                        if fi.is_dir {
+                            &SKIN.bold
+                        } else {
+                            &SKIN.paragraph.compound_style
+                        },
                     )
                 }),
-            ).with_align(Alignment::Left),
+            )
+            .with_align(Alignment::Left),
         ];
         let area = Area::new(0, 1, 10, 10);
         let mut list_view = ListView::new(area, columns, &SKIN);
@@ -106,14 +123,15 @@ impl<'t> Screen<'t> {
         let title = if self.finished {
             format!("# **{}**", self.root.as_os_str().to_string_lossy())
         } else {
-            format!("# **{}** *computing...*", self.root.as_os_str().to_string_lossy())
+            format!(
+                "# **{}** *computing...*",
+                self.root.as_os_str().to_string_lossy()
+            )
         };
+        self.skin
+            .write_in_area(&title, &Area::new(0, 0, w, 1))
+            .unwrap();
         self.skin.write_in_area(
-            &title,
-            &Area::new(0, 0, w, 1),
-        ).unwrap();
-        self.skin.write_in_area(
-            //"Hit *ctrl-q* to quit, *esc* to go to parent, *⬆* and *⬇* to select, and *enter* to open",
             "Hit *ctrl-q* to quit, *esc* to go to parent, *↑* and *↓* to select, and *enter* to open",
             &Area::new(0, h-2, w, 1),
         ).unwrap();
@@ -140,4 +158,3 @@ pub fn u64_to_str(mut v: u64) -> String {
     }
     format!("{}{}", v, &SIZE_NAMES[i])
 }
-

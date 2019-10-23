@@ -2,7 +2,7 @@ use std::{
     collections::HashSet,
     fs,
     os::unix::fs::MetadataExt, // TODO windows compatibility...
-    path::{PathBuf},
+    path::PathBuf,
 };
 
 pub struct FileInfo {
@@ -45,5 +45,3 @@ impl FileInfo {
         }
     }
 }
-
-

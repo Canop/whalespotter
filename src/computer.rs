@@ -1,12 +1,12 @@
-
+use crate::file_info::FileInfo;
+use crossbeam::channel::{unbounded, Receiver, Sender};
 use std::{
     path::{Path, PathBuf},
-    sync::{atomic::{AtomicUsize, Ordering}, Arc},
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    },
     thread,
-};
-use crossbeam::channel::{Receiver, Sender, unbounded};
-use crate::{
-    file_info::FileInfo,
 };
 
 pub enum ComputationEvent {
@@ -24,11 +24,7 @@ impl Computer {
     pub fn new() -> Self {
         let (tx, rx) = unbounded();
         let task_count = Arc::new(AtomicUsize::new(0));
-        Self {
-            tx,
-            rx,
-            task_count,
-        }
+        Self { tx, rx, task_count }
     }
     pub fn do_children(&mut self, root: &Path) {
         lazy_static! {
@@ -42,18 +38,20 @@ impl Computer {
             }
             if let Ok(md) = entry.metadata() {
                 if md.is_file() {
-                    self.tx.send(ComputationEvent::FileInfo(FileInfo {
-                        path: entry.path(),
-                        file_count: 1,
-                        size: md.len(),
-                        is_dir: false,
-                    })).unwrap();
+                    self.tx
+                        .send(ComputationEvent::FileInfo(FileInfo {
+                            path: entry.path(),
+                            file_count: 1,
+                            size: md.len(),
+                            is_dir: false,
+                        }))
+                        .unwrap();
                 } else if md.is_dir() {
                     let tx = self.tx.clone();
                     thread_count.fetch_add(1, Ordering::Relaxed);
                     let thread_count = Arc::clone(&thread_count);
                     let task_count = Arc::clone(&self.task_count);
-                    thread::spawn(move||{
+                    thread::spawn(move || {
                         let fi = FileInfo::from_dir(entry.path());
                         // we check we didn't finish an obsolete task
                         let current_task_count = task_count.load(Ordering::Relaxed);
@@ -68,6 +66,10 @@ impl Computer {
                     });
                 }
             }
+        }
+        if thread_count.load(Ordering::Relaxed) == 0 {
+            // there was no folder
+            self.tx.send(ComputationEvent::Finished).unwrap();
         }
     }
 }

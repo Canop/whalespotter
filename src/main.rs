@@ -1,19 +1,19 @@
 /*!
 
 */
-#[macro_use(select)] extern crate crossbeam;
-#[macro_use] extern crate lazy_static;
+#[macro_use(select)]
+extern crate crossbeam;
+#[macro_use]
+extern crate lazy_static;
 
 mod computer;
 mod file_info;
 mod screen;
 
-use std::path::{Path, PathBuf};
-use crossterm_screen::AlternateScreen;
-use crossterm_input::KeyEvent;
-use crossterm_cursor::TerminalCursor;
-use termimad::*;
+use crossterm::{AlternateScreen, KeyEvent, TerminalCursor};
 use open;
+use std::path::{Path, PathBuf};
+use termimad::*;
 
 use crate::{
     computer::{ComputationEvent, Computer},
@@ -31,7 +31,7 @@ fn starting_path() -> PathBuf {
             }
         }
     }
-    std::env::current_dir().unwrap_or_else(|_|Path::new("/").to_path_buf())
+    std::env::current_dir().unwrap_or_else(|_| Path::new("/").to_path_buf())
 }
 
 fn main() {
@@ -69,7 +69,7 @@ fn main() {
                         Event::Key(KeyEvent::Ctrl('q')) => {
                             quit = true;
                         }
-                        Event::Key(KeyEvent::Char('\n')) => {
+                        Event::Key(KeyEvent::Enter) => {
                             let fi = screen.list_view.get_selection();
                             if let Some(fi) = fi {
                                 if fi.is_dir {
@@ -135,4 +135,3 @@ fn main() {
 
     cursor.show().unwrap();
 }
-
