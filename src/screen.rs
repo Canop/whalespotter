@@ -1,5 +1,8 @@
-use crossterm::{Attribute, Color::*};
-use crossterm::{ClearType, Terminal};
+use crossterm::{
+    queue,
+    style::{Attribute, Color::*},
+    terminal::{self, Clear, ClearType},
+};
 use std::{
     path::{Path, PathBuf},
     sync::{
@@ -7,7 +10,10 @@ use std::{
         Arc,
     },
 };
-use termimad::*;
+use termimad::{
+    ansi, Alignment, Area, CompoundStyle, ListView, ListViewCell, ListViewColumn, MadSkin,
+    ProgressBar, Result,
+};
 
 use crate::file_info::FileInfo;
 
@@ -111,13 +117,16 @@ impl<'t> Screen<'t> {
     pub fn get_root(&self) -> &Path {
         &self.root
     }
-    pub fn display(&mut self) {
-        let (w, h) = terminal_size();
-        if (w, h) != self.dimensions {
-            Terminal::new().clear(ClearType::All).unwrap();
-            self.dimensions = (w, h);
-            self.list_view.area.width = w;
-            self.list_view.area.height = h - 4;
+    pub fn display<W>(&mut self, writer: &mut W) -> Result<()>
+    where
+        W: std::io::Write,
+    {
+        let (width, height) = terminal::size()?;
+        if (width, height) != self.dimensions {
+            queue!(writer, Clear(ClearType::All))?;
+            self.dimensions = (width, height);
+            self.list_view.area.width = width;
+            self.list_view.area.height = height - 4;
             self.list_view.update_dimensions();
         }
         let title = if self.finished {
@@ -129,13 +138,13 @@ impl<'t> Screen<'t> {
             )
         };
         self.skin
-            .write_in_area(&title, &Area::new(0, 0, w, 1))
-            .unwrap();
-        self.skin.write_in_area(
+            .write_in_area_on(writer, &title, &Area::new(0, 0, width, 1))?;
+        self.skin.write_in_area_on(
+            writer,
             "Hit *ctrl-q* to quit, *esc* to go to parent, *↑* and *↓* to select, and *enter* to open",
-            &Area::new(0, h-2, w, 1),
-        ).unwrap();
-        self.list_view.display().unwrap();
+            &Area::new(0, height-2, width, 1),
+        )?;
+        self.list_view.write_on(writer)
     }
 }
 

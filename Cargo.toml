@@ -1,6 +1,6 @@
 [package]
 name = "whalespotter"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["dystroy <denys.seguret@gmail.com>"]
 repository = "https://github.com/Canop/broot"
 description = "Find Big and Fat Files and Folders"
@@ -13,12 +13,14 @@ readme = "README.md"
 [dependencies]
 lazy_static = "1.3"
 crossbeam = "0.7"
-crossterm = "0.12.1"
-termimad = "0.7.0"
-#termimad = { path = "../termimad" }
+crossterm = "0.13"
+termimad = "0.7.1"
 open = "1.3.1"
-
 
 [profile.release]
 lto = true # link time optimization - roughly halves the size of the exec
 codegen-units = 1 # this removes a few hundred bytes from the final exec size
+
+[patch.crates-io]
+# termimad = { path = "../termimad" }
+# crossterm = { path = "../crossterm-rs/crossterm" }

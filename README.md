@@ -4,6 +4,7 @@
 * a convenient application to fast locate fat files and folders
 * a demonstration of how to use channels to parallelize computations and never block the UI
 * a demonstration of a few [Termimad](https://github.com/Canop/termimad/) widgets
+* a very small and easy to read codebase
 
 ![screen](img/screen.png)
 

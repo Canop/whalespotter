@@ -1,6 +1,3 @@
-/*!
-
-*/
 #[macro_use(select)]
 extern crate crossbeam;
 #[macro_use]
@@ -10,10 +7,19 @@ mod computer;
 mod file_info;
 mod screen;
 
-use crossterm::{AlternateScreen, KeyEvent, TerminalCursor};
+use std::{
+    io::Write,
+    path::{Path, PathBuf},
+};
+
+use crossterm::{
+    cursor,
+    input::KeyEvent,
+    queue,
+    screen::{EnterAlternateScreen, LeaveAlternateScreen},
+};
 use open;
-use std::path::{Path, PathBuf};
-use termimad::*;
+use termimad::{Event, EventSource};
 
 use crate::{
     computer::{ComputationEvent, Computer},
@@ -34,19 +40,20 @@ fn starting_path() -> PathBuf {
     std::env::current_dir().unwrap_or_else(|_| Path::new("/").to_path_buf())
 }
 
-fn main() {
+fn main() -> termimad::Result<()> {
+    let mut w = std::io::stderr();
+    queue!(w, EnterAlternateScreen)?;
+    queue!(w, cursor::Hide)?; // hiding the cursor
+
     let mut screen = Screen::new(starting_path());
-    let _alt_screen = AlternateScreen::to_alternate(true);
-    let cursor = TerminalCursor::new();
-    cursor.hide().unwrap();
-    let event_source = EventSource::new();
+    let event_source = EventSource::new()?;
     let rx_user = event_source.receiver();
 
     let mut computer = Computer::new();
     computer.do_children(screen.get_root());
 
     loop {
-        screen.display();
+        screen.display(&mut w)?;
         select! {
             recv(computer.rx) -> comp_event => {
                 match comp_event {
@@ -132,6 +139,8 @@ fn main() {
             }
         }
     }
-
-    cursor.show().unwrap();
+    queue!(w, cursor::Show)?;
+    queue!(w, LeaveAlternateScreen)?;
+    w.flush()?;
+    Ok(())
 }
