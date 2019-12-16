@@ -7,23 +7,23 @@ mod computer;
 mod file_info;
 mod screen;
 
-use std::{
-    io::Write,
-    path::{Path, PathBuf},
-};
-
-use crossterm::{
-    cursor,
-    input::KeyEvent,
-    queue,
-    screen::{EnterAlternateScreen, LeaveAlternateScreen},
-};
-use open;
-use termimad::{Event, EventSource};
-
-use crate::{
-    computer::{ComputationEvent, Computer},
-    screen::Screen,
+use {
+    crate::{
+        computer::{ComputationEvent, Computer},
+        screen::Screen,
+    },
+    crossterm::{
+        cursor,
+        event::KeyCode,
+        queue,
+        terminal::{EnterAlternateScreen, LeaveAlternateScreen},
+    },
+    open,
+    std::{
+        io::Write,
+        path::{Path, PathBuf},
+    },
+    termimad::{Event, EventSource},
 };
 
 /// find the path to open first: either a passed one
@@ -39,6 +39,17 @@ fn starting_path() -> PathBuf {
     }
     std::env::current_dir().unwrap_or_else(|_| Path::new("/").to_path_buf())
 }
+
+const ENTER: Event = Event::simple_key(KeyCode::Enter);
+const F5: Event = Event::simple_key(KeyCode::F(5));
+const ESC: Event = Event::simple_key(KeyCode::Esc);
+const HOME: Event = Event::simple_key(KeyCode::Home);
+const END: Event = Event::simple_key(KeyCode::End);
+const PAGE_UP: Event = Event::simple_key(KeyCode::PageUp);
+const PAGE_DOWN: Event = Event::simple_key(KeyCode::PageDown);
+const UP: Event = Event::simple_key(KeyCode::Up);
+const DOWN: Event = Event::simple_key(KeyCode::Down);
+const CTRL_Q: Event = Event::crtl_key(KeyCode::Char('q'));
 
 fn main() -> termimad::Result<()> {
     let mut w = std::io::stderr();
@@ -73,10 +84,7 @@ fn main() -> termimad::Result<()> {
                 if let Ok(user_event) = user_event {
                     let mut quit = false;
                     match user_event {
-                        Event::Key(KeyEvent::Ctrl('q')) => {
-                            quit = true;
-                        }
-                        Event::Key(KeyEvent::Enter) => {
+                        ENTER => {
                             let fi = screen.list_view.get_selection();
                             if let Some(fi) = fi {
                                 if fi.is_dir {
@@ -88,11 +96,11 @@ fn main() -> termimad::Result<()> {
                                 }
                             }
                         }
-                        Event::Key(KeyEvent::F(5)) => {
+                        F5 => {
                             screen.set_new_root(screen.get_root().to_path_buf());
                             computer.do_children(screen.get_root());
                         }
-                        Event::Key(KeyEvent::Esc) => {
+                        ESC => {
                             if screen.list_view.has_selection() {
                                 screen.list_view.unselect();
                             } else {
@@ -105,23 +113,26 @@ fn main() -> termimad::Result<()> {
                                 }
                             }
                         }
-                        Event::Key(KeyEvent::Home) => {
+                        HOME => {
                             screen.list_view.select_first_line();
                         }
-                        Event::Key(KeyEvent::End) => {
+                        END => {
                             screen.list_view.select_last_line();
                         }
-                        Event::Key(KeyEvent::PageUp) => {
+                        PAGE_UP => {
                             screen.list_view.try_scroll_pages(-1);
                         }
-                        Event::Key(KeyEvent::PageDown) => {
+                        PAGE_DOWN => {
                             screen.list_view.try_scroll_pages(1);
                         }
-                        Event::Key(KeyEvent::Up) => {
+                        UP => {
                             screen.list_view.try_select_next(true);
                         }
-                        Event::Key(KeyEvent::Down) => {
+                        DOWN => {
                             screen.list_view.try_select_next(false);
+                        }
+                        CTRL_Q => {
+                            quit = true;
                         }
                         Event::Wheel(lines_count) => {
                             screen.list_view.try_scroll_lines(lines_count);
