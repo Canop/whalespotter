@@ -1,6 +1,7 @@
 use crate::file_info::FileInfo;
 use crossbeam::channel::{unbounded, Receiver, Sender};
 use std::{
+    os::unix::fs::MetadataExt, // TODO windows compatibility...
     path::{Path, PathBuf},
     sync::{
         atomic::{AtomicUsize, Ordering},
@@ -38,11 +39,14 @@ impl Computer {
             }
             if let Ok(md) = entry.metadata() {
                 if md.is_file() {
+                    let nominal_size = md.size();
+                    let block_size = md.blocks() * md.blksize();
+                    let size = nominal_size.min(block_size);
                     self.tx
                         .send(ComputationEvent::FileInfo(FileInfo {
                             path: entry.path(),
                             file_count: 1,
-                            size: md.len(),
+                            size,
                             is_dir: false,
                         }))
                         .unwrap();

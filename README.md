@@ -20,7 +20,10 @@ If you want to play with the code, you'll probably fetch the repository. From th
 
 and the executable will be in `target/release`.
 
-Note that the current version of whalespotter doesn't run on windows (due to some additional code to deduplicate inodes).
+Notes:
+
+* the current version of whalespotter doesn't run on windows (due to some additional code to deduplicate inodes).
+* reported sizes take blocks into account, so they may be smaller than the nominal size for sparse files (the goal is to find what takes space in your disks).
 
 
 ## Usage
