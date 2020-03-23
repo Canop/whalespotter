@@ -394,7 +394,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "whalespotter"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "crossbeam 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossterm 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",

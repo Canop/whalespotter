@@ -1,6 +1,6 @@
 [package]
 name = "whalespotter"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["dystroy <denys.seguret@gmail.com>"]
 repository = "https://github.com/Canop/broot"
 description = "Find Big and Fat Files and Folders"
