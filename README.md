@@ -9,12 +9,7 @@
 [s3]: https://miaou.dystroy.org/static/shields/room.svg
 [l3]: https://miaou.dystroy.org/3?broot
 
-**whalespotter** is
-
-* a convenient application to fast locate fat files and folders
-* a demonstration of how to use channels to parallelize computations and never block the UI
-* a demonstration of a few [Termimad](https://github.com/Canop/termimad/) widgets
-* a very small and easy to read codebase
+a convenient application to fast locate fat files and folders (linux & mac)
 
 ![screen](img/screen.png)
 
@@ -23,18 +18,6 @@
 The simplest solution is to execute
 
 	cargo install whalespotter
-
-If you want to play with the code, you'll probably fetch the repository. From there you can do
-
-	cargo build --release
-
-and the executable will be in `target/release`.
-
-Notes:
-
-* the current version of whalespotter doesn't run on windows (due to some additional code to deduplicate inodes). It could be easily adapted but I'd need at least a Windows tester.
-* reported sizes take blocks into account, so they may be smaller than the nominal size for sparse files (the goal is to find what takes space in your disks).
-
 
 ## Usage
 
@@ -48,5 +31,7 @@ Pass the desired path:
 * *esc* to either unselect, or go to parent, or quit
 * *pageUp* and *pageDown* to scroll
 * *F5* to refresh
+
+Note: reported sizes take blocks into account, so they may be smaller than the nominal size for sparse files (the goal is to find what takes space in your disks).
 
 Whalespotter is dedicated to one use case: spotting big directories and files. If you want also other features like launching, deleting, moving, etc. you may be interested in a less focused tool, [broot](https://github.com/Canop/broot).
