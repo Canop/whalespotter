@@ -32,6 +32,8 @@ Pass the desired path:
 * *pageUp* and *pageDown* to scroll
 * *F5* to refresh
 
-Note: reported sizes take blocks into account, so they may be smaller than the nominal size for sparse files (the goal is to find what takes space in your disks).
+Note: reported sizes take blocks into account, so they may be smaller than the nominal size for the rare sparse files.
 
-Whalespotter is dedicated to one use case: spotting big directories and files. If you want also other features like launching, deleting, moving, etc. you may be interested in a less focused tool, [broot](https://github.com/Canop/broot).
+Whalespotter is dedicated to one use case: spotting big directories and files.
+If your goal is to clean your disk, you might be interested in the more recent set of tools I developped.
+They're described in [this blog post](https://dystroy.org/blog/reclaim-space-on-disk/).
