@@ -18,7 +18,6 @@ use {
         queue,
         terminal::{EnterAlternateScreen, LeaveAlternateScreen},
     },
-    open,
     std::{
         io::Write,
         path::{Path, PathBuf},
@@ -33,7 +32,7 @@ fn starting_path() -> PathBuf {
         let path = Path::new(&s);
         if path.is_dir() {
             if let Ok(path) = path.canonicalize() {
-                return path.to_path_buf();
+                return path;
             }
         }
     }

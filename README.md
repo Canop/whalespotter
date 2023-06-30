@@ -17,7 +17,7 @@ a convenient application to fast locate fat files and folders (linux & mac)
 
 The simplest solution is to execute
 
-	cargo install whalespotter
+	cargo install --locked whalespotter
 
 ## Usage
 
